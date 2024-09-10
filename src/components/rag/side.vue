@@ -27,14 +27,15 @@
     <section
       class="flex my-3 items-center py-2 px-3 bg-white rounded-full duration-300 cursor-pointer hover:bg-zinc-200">
       <el-dropdown class="w-full">
-        <span class="el-dropdown-link w-full flex items-center">
+        <div class="w-full flex items-center focus-visible:outline-none">
           <el-avatar :size="40" src="/images/user.png" />
           <div class="ml-3">
             {{ info.name || info.email || 'user' }}
           </div>
-        </span>
+        </div>
         <template #dropdown>
-          <el-dropdown-menu>
+          <el-dropdown-menu class="w-full">
+            <el-dropdown-item @click="background">进入后台</el-dropdown-item>
             <el-dropdown-item @click="logout">退出登录</el-dropdown-item>
           </el-dropdown-menu>
         </template>
@@ -50,7 +51,9 @@ import { DeleteThree, Newlybuild } from '@icon-park/vue-next'
 import HistoryButton from './historyButton.vue'
 import userStore from '@/store/userStore'
 import { UserType } from '@/apis/user'
+import { useRouter } from 'vue-router'
 const info = ref<UserType>({ name: '', email: '', id: 0, permissions: [] })
+const router = useRouter()
 onMounted(() => {
   info.value = userStore().getUserInfo()
 })
@@ -67,6 +70,9 @@ const switchSession = async (index: number) => {
   if (storeIndex === index) {
     session.setFlush()
   }
+}
+const background = () => {
+  router.push('/admin/workbench')
 }
 </script>
 

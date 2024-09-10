@@ -7,7 +7,7 @@ export enum apiEnum {
   RAG_CHAT = "/api/rag/chat",
 
   UPLOAD_DOCUMENT = '/api/vector_store/upload_single',
-  
+
   DATABASE_GET = "/api/vector_store/database/get",
   DATABASE_CREATE = "/api/vector_store/database/create",
   DATABASE_GET_ALL = "/api/vector_store/databases",
@@ -18,5 +18,6 @@ export enum apiEnum {
 
   COLLECTION_CREATE = "/api/vector_store/collection/create",
   COLLECTION_GET = "/api/vector_store/collection/get",
-  COLLECTION_GET_ALL = "/api/vector_store/collections"
+  COLLECTION_GET_ALL = "/api/vector_store/collections",
+  COLLECTION_GET_ALL_NAME = "/api/vector_store/collection/names"
 }

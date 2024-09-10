@@ -10,14 +10,21 @@
       </article>
     </el-main>
     <el-footer class="relative flex flex-col justify-center items-center mt-3">
-      <section class="flex-1 flex justify-center items-center mt-4">
+      <section class="flex-1 flex w-[850px] justify-center items-center my-4">
         <Drawer />
-        <input
-          class="w-[650px] h-[50px] outline-none px-6 rounded-lg duration-300 hover:shadow-md focus:shadow-md"
-          type="text"
-          v-model="userInput"
-          placeholder="想了解点什么~"
-          @keyup.enter="handleSubmit" />
+        <div class="flex flex-1 h-[50px] bg-white items-center rounded-lg duration-300 hover:shadow-md focus:shadow-md">
+          <input
+            class="flex-[8] h-full pl-6 outline-none"
+            type="text"
+            v-model="userInput"
+            placeholder="想了解点什么~"
+            @keyup.enter="handleSubmit" />
+          <span
+            v-if="chatMode"
+            class="cursor-default flex-1 flex justify-center items-center h-1/2 text-white bg-[#A29BFE] rounded-lg mr-2 px-3"
+            >{{ collectionName }}</span
+          >
+        </div>
         <el-switch
           v-model="chatMode"
           inline-prompt
@@ -33,29 +40,43 @@
 </template>
 
 <script setup lang="ts">
-import { getStream } from '@/apis/llm'
+import { chat, llmChat } from '@/apis/llm'
+import { ragChat } from '@/apis/rag'
 import sessionStore from '@/store/sessionStore'
-import { ElNotification } from 'element-plus'
+import { ElMessage, ElNotification } from 'element-plus'
 import { v4 } from 'uuid'
 import { onMounted, ref } from 'vue'
 import Drawer from './drawer.vue'
 import Message from './message.vue'
+import { getCollectionNames } from '@/apis/collection'
+import llmStore from '@/store/llmStore'
 const userInput = ref('')
 const isEmpty = ref(await sessionStore().isSessionEmpty())
 // false: 基础LLM模式; true: RAG模式
 const chatMode = ref('基础模式')
+const collectionName = ref('')
 
-// 初始化滑动与流式渲染监听滑动
+const syncCollectionName = async () => {
+  const savedCollectionName = await llmStore().getDefaultCollectionName()
+  try {
+    collectionName.value = savedCollectionName!
+  } catch (e) {
+    ElMessage.error('请设置默认查询集合')
+  }
+}
+
+onMounted(syncCollectionName)
 onMounted(() => {
   const mainWindow = document.getElementById('main-window')
   mainWindow?.scroll({ top: mainWindow?.scrollHeight })
 })
+watch(llmStore(), syncCollectionName)
+// 初始化滑动与流式渲染监听滑动
 watch(await sessionStore(), async () => {
   const mainWindow = document.getElementById('main-window')
   mainWindow?.scroll({ top: mainWindow?.scrollHeight })
   isEmpty.value = await sessionStore().isSessionEmpty()
 })
-
 // 发起对话
 const handleSubmit = async (e: KeyboardEvent) => {
   const ipt = e.target as HTMLInputElement
@@ -113,10 +134,11 @@ const parseChunk = (chunk: string) => {
 }
 
 const handleStream = async (slice: string[]) => {
-  const res = await getStream({
-    mode: chatMode.value ? 'rag' : 'llm',
+  const res = await chat({
     prompt: userInput.value,
     system_prompt: '',
+    mode: chatMode.value ? 'rag' : 'llm',
+    collection_name: collectionName.value,
     chat_history: [
       {
         role: 'user',
@@ -154,7 +176,7 @@ const handleStream = async (slice: string[]) => {
 </script>
 
 <style scoped lang="scss">
-.main{
+.main {
   min-width: 640px;
 }
 

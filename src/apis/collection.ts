@@ -3,14 +3,16 @@ interface CreateCollectionType {
   name: string
   tenant_name: string
   database_name: string
-  metadata: Record<string, string>
+  metadata?: Record<string, string>
 }
 
 export function getCollectionByName(name: string) {
   return fetch(apiEnum.COLLECTION_GET, {
-    body: JSON.stringify({
-      name
-    })
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ name })
   })
 }
 
@@ -18,10 +20,16 @@ export function getCollections() {
   return fetch(apiEnum.COLLECTION_GET_ALL)
 }
 
+export function getCollectionNames() {
+  return fetch(apiEnum.COLLECTION_GET_ALL_NAME)
+}
+
 export function createCollection(data: CreateCollectionType) {
   return fetch(apiEnum.COLLECTION_CREATE, {
-    body: JSON.stringify({
-      name
-    })
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
   })
 }
