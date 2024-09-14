@@ -35,7 +35,7 @@
         </div>
         <template #dropdown>
           <el-dropdown-menu class="w-full">
-            <el-dropdown-item @click="background">进入后台</el-dropdown-item>
+            <el-dropdown-item v-if="!store.isStudent()" @click="background">进入后台</el-dropdown-item>
             <el-dropdown-item @click="logout">退出登录</el-dropdown-item>
           </el-dropdown-menu>
         </template>
@@ -52,6 +52,7 @@ import HistoryButton from './historyButton.vue'
 import userStore from '@/store/userStore'
 import { UserType } from '@/apis/user'
 import { useRouter } from 'vue-router'
+import store from '@/utils/store'
 const info = ref<UserType>({ name: '', email: '', id: 0, permissions: [] })
 const router = useRouter()
 onMounted(() => {

@@ -18,6 +18,7 @@ export async function loginWrap(values: UserLoginType) {
     const routeName = store.get(CacheEnum.REDIRECT_ROUTE_NAME) ?? 'home'
     userStore().setUserInfo(await getCurrentUser().then(res => res))
     router.push({ name: routeName })
+    location.reload()
   }
 }
 export function logout() {
@@ -56,7 +57,7 @@ export function isLogin() {
 }
 
 export function backToHomepage() {
-  setTimeout(()=>{
-   router.push('/')
+  setTimeout(() => {
+    router.push('/')
   })
 }

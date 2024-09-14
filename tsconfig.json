@@ -9,14 +9,25 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "esModuleInterop": true,
-    "lib": ["ESNext", "DOM"],
+    "lib": [
+      "ESNext",
+      "DOM"
+    ],
     "skipLibCheck": true,
     "noEmit": true,
     "paths": {
-      "@/*": ["./src/*"],
-      "#/*": ["./types/*"]
+      "@/*": [
+        "./src/*"
+      ],
+      "#/*": [
+        "./types/*"
+      ]
     },
-    "types": ["element-plus/global","echarts","lodash"]
+    "types": [
+      "element-plus/global",
+      "echarts",
+      "lodash"
+    ]
   },
   "include": [
     "src/**/*.ts",

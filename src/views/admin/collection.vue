@@ -66,7 +66,7 @@
 import { ref, onMounted } from 'vue'
 import { getCollections, createCollection, getCollectionByName } from '@/apis/collection'
 import UploadDocument from '@/components/rag/uploadDocument.vue'
-import { OptionsType } from '#/ui'
+import { type OptionsType } from '#/ui'
 export interface CollectionType {
   id: string
   name: string

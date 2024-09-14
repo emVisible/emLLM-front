@@ -18,7 +18,7 @@
             :options="options"
             @change="setNewCollectionName" />
         </el-card>
-        <el-card class="w-full">
+        <el-card class="w-full" v-if="!store.isStudent()">
           <template #header>
             <div class="card-header">
               <h1 class="text-lg">集合上传</h1>
@@ -41,12 +41,11 @@
 </template>
 
 <script lang="ts" setup>
-import { ElNotification } from 'element-plus'
-import { defineEmits } from 'vue'
-import { Config, Equalizer, UploadLogs } from '@icon-park/vue-next'
+import { type OptionsType } from '../../../types/ui'
 import { getCollectionNames } from '@/apis/collection'
-import { OptionsType } from '@/views/admin/collection.vue'
 import llmStore from '@/store/llmStore'
+import store from '@/utils/store'
+import { Config } from '@icon-park/vue-next'
 import UploadDocument from './uploadDocument.vue'
 const conf = llmStore()
 const emit = defineEmits(['getConfig'])
@@ -79,7 +78,7 @@ onBeforeMount(async () => {
   const savedCollectionName = await llmStore().getDefaultCollectionName()
   defaultCollectionName.value = savedCollectionName || cacheValue.value
 })
-const setNewCollectionName = async(current: any) => {
+const setNewCollectionName = async (current: any) => {
   const name = (current as Record<number, string>)[0]
   await llmStore().updateDefaultCollectionName(name)
 }

@@ -1,5 +1,5 @@
-import  store  from '@/utils/store';
-import { IMenu } from '#/menu';
+import store from '@/utils/store';
+import { IMenu } from '../../types/menu';
 import { RouteRecordRaw } from 'vue-router'
 import {
   RouteLocationNormalized,
@@ -62,7 +62,7 @@ class Menu {
 
   toggleState() {
     this.close.value = !this.close.value
-    store.set(CacheEnum.MENU_IS_CLOSE,this.close.value)
+    store.set(CacheEnum.MENU_IS_CLOSE, this.close.value)
   }
 
   addHistoryMenu(route: RouteLocationNormalized) {
