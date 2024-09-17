@@ -18,20 +18,6 @@
             :options="options"
             @change="setNewCollectionName" />
         </el-card>
-        <el-card class="w-full" v-if="!store.isStudent()">
-          <template #header>
-            <div class="card-header">
-              <h1 class="text-lg">集合上传</h1>
-            </div>
-          </template>
-          <section>
-            <h2>选择集合</h2>
-            <el-cascader class="w-full" size="large" v-model="collectionName" :options="options" />
-          </section>
-          <section>
-            <UploadDocument :collectionName="collectionName" />
-          </section>
-        </el-card>
       </template>
     </el-drawer>
     <div class="duration-300 hover:scale-125">
@@ -44,9 +30,7 @@
 import { type OptionsType } from '../../../types/ui'
 import { getCollectionNames } from '@/apis/collection'
 import llmStore from '@/store/llmStore'
-import store from '@/utils/store'
 import { Config } from '@icon-park/vue-next'
-import UploadDocument from './uploadDocument.vue'
 const conf = llmStore()
 const emit = defineEmits(['getConfig'])
 const isDrawerShow = ref(false)
