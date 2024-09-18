@@ -29,10 +29,9 @@ import Error from '@/components/y/error.vue'
 import v from '../../plugins/validate'
 import { loginWrap } from '../../utils/user'
 import { ElNotification } from 'element-plus'
-import router from '@/router'
 import { registry } from '@/apis/user'
 const { useForm, useFields, yup } = v
-
+const router = useRouter()
 const schema = yup.object({
   account: yup
     .string()
@@ -52,16 +51,14 @@ const onSubmit = handleSubmit(async (values: any) => {
     name: account,
     email: account,
     password: password,
-  })
-    .then((r) => {
-      console.log('r', r)
-    })
-    .then(() => {
+  }).then((r) => {
+    if (r.ok) {
       ElNotification({ title: '注册成功' })
-      setTimeout(() => {
-        router.push({ name: 'login' })
-      }, 1000)
-    })
+      router.push({ path: '/login' })
+    } else {
+      ElNotification({ title: '用户已注册', type: 'error' })
+    }
+  })
 })
 </script>
 

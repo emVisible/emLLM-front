@@ -1,5 +1,5 @@
 <template>
-  <el-container class="h-full w-full">
+  <el-container class="h-[99%] w-full">
     <el-main class="main flex" id="main-window">
       <article v-if="!isEmpty" class="flex-1">
         <Message />

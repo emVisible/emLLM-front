@@ -5,13 +5,13 @@ const routes = [
     path: '/',
     name: 'rag',
     component: () => import('@/views/llm/rag.vue'),
-    meta: { auth: true, permission: "student"},
+    meta: { auth: true, permission: "student" },
   },
   {
     path: '/login',
     name: 'login',
     component: () => import('@/layouts/auth.vue'),
-    meta: { guest: true , permission: "student" },
+    meta: { guest: true },
     children: [
       {
         name: '',
@@ -24,7 +24,7 @@ const routes = [
     path: '/registry',
     name: 'registry',
     component: () => import('@/layouts/auth.vue'),
-    meta: { auth:true, permission: "director" },
+    meta: { guest: true },
     children: [
       {
         name: '',

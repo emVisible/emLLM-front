@@ -42,6 +42,9 @@ export async function login(data: UserLoginType): Promise<AuthReturnType> {
 export function registry(data: UserRegistryType) {
   return fetch(apiEnum.REGISTRY, {
     method: 'post',
+    headers: {
+      "Content-Type": "application/json"
+    },
     body: JSON.stringify(data)
   })
 }
