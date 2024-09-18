@@ -1,23 +1,24 @@
 <template>
   <div>
-    <section>
-      <h2>学院-Tenants</h2>
+      <el-card>
+        <template #header>
+          <div class="card-header">
+            <h2>学院-Tenants</h2>
+          </div>
+        </template>
+        <div class="header-container">
+          <el-button @click="openDialog" type="primary">创建租户</el-button>
+          <span style="display: inline-flex">
+            <el-input v-model="searchQuery" placeholder="请输入租户名称搜索" clearable style="margin-right: 5px" />
+            <el-button @click="performSearch" type="primary">搜索</el-button>
+          </span>
+        </div>
 
-      <!-- 搜索框和创建按钮 -->
-      <div class="header-container">
-        <el-button @click="openDialog" type="primary">创建租户</el-button>
-        <span style="display: inline-flex">
-          <el-input v-model="searchQuery" placeholder="请输入租户名称搜索" clearable style="margin-right: 5px" />
-          <el-button @click="performSearch" type="primary">搜索</el-button>
-        </span>
-      </div>
-
-      <el-table :data="tenants" style="width: 100%">
-        <el-table-column prop="id" label="ID" />
-        <el-table-column prop="name" label="学院名称 (英)" />
-      </el-table>
-
-      <!-- 弹窗：创建租户 -->
+        <el-table :data="tenants" style="width: 100%">
+          <el-table-column prop="id" label="ID" />
+          <el-table-column prop="name" label="学院名称 (英)" />
+        </el-table>
+      </el-card>
       <el-dialog
         title="创建新租户"
         v-model="isDialogVisible"
@@ -35,7 +36,6 @@
           <el-button type="primary" @click="createNewTenant">创建</el-button>
         </template>
       </el-dialog>
-    </section>
   </div>
 </template>
 
@@ -79,7 +79,7 @@ async function performSearch() {
     tenants.value = [
       {
         id: '1',
-        name:data.name,
+        name: data.name,
       },
     ] as any
   } else {

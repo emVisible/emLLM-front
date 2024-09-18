@@ -1,24 +1,28 @@
 <template>
   <div class="flex flex-col gap-6">
     <section>
-      <h2>集合 - Collection</h2>
+      <el-card>
+        <template #header>
+          <div class="card-header">
+            <h2>集合 - Collection</h2>
+          </div>
+        </template>
+        <div class="header-container">
+          <el-button @click="openDialog" type="primary">创建集合</el-button>
+          <span style="display: inline-flex">
+            <el-input v-model="searchQuery" placeholder="请输入集合名称搜索" clearable style="margin-right: 5px" />
+            <el-button @click="performSearch" type="primary">搜索</el-button>
+          </span>
+        </div>
 
-      <!-- 搜索框和创建按钮 -->
-      <div class="header-container">
-        <el-button @click="openDialog" type="primary">创建集合</el-button>
-        <span style="display: inline-flex">
-          <el-input v-model="searchQuery" placeholder="请输入集合名称搜索" clearable style="margin-right: 5px" />
-          <el-button @click="performSearch" type="primary">搜索</el-button>
-        </span>
-      </div>
-
-      <!-- 集合展示表格 -->
-      <el-table :data="collections" style="width: 100%">
-        <el-table-column prop="id" label="ID" />
-        <el-table-column prop="name" label="集合名称" />
-        <el-table-column prop="vest_database" label="归属数据库" />
-        <el-table-column prop="vest_tenant" label="归属学院 (英)" />
-      </el-table>
+        <!-- 集合展示表格 -->
+        <el-table :data="collections" style="width: 100%">
+          <el-table-column prop="id" label="ID" />
+          <el-table-column prop="name" label="集合名称" />
+          <el-table-column prop="vest_database" label="归属数据库" />
+          <el-table-column prop="vest_tenant" label="归属学院 (英)" />
+        </el-table>
+      </el-card>
 
       <!-- 弹窗：创建集合 -->
       <el-dialog
@@ -48,8 +52,8 @@
         </template>
       </el-dialog>
     </section>
-    <section>
-      <el-card>
+    <section class="flex gap-6">
+      <el-card class="flex-1">
         <template #header>
           <div class="card-header">
             <h2>上传文档</h2>
@@ -57,6 +61,13 @@
         </template>
         <el-cascader class="w-full" v-model="collectionName" :options="options" />
         <UploadDocument :collectionName="collectionName" />
+      </el-card>
+      <el-card class="flex-1">
+        <template #header>
+          <div class="card-header">
+            <h2>Documents</h2>
+          </div>
+        </template>
       </el-card>
     </section>
   </div>
@@ -67,6 +78,7 @@ import { ref, onMounted } from 'vue'
 import { getCollections, createCollection, getCollectionByName } from '@/apis/collection'
 import UploadDocument from '@/components/rag/uploadDocument.vue'
 import { type OptionsType } from '#/ui'
+import { getCollectionsDetail } from '../../apis/collection';
 export interface CollectionType {
   id: string
   name: string
@@ -76,6 +88,8 @@ export interface CollectionType {
 
 onMounted(async () => {
   await fetchCollections()
+  const res = await getCollectionsDetail().then(res=>res.json())
+  console.log('res',res)
 })
 const collectionName = ref('')
 const options = ref<OptionsType[]>([])

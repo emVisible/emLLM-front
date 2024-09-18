@@ -33,3 +33,7 @@ export function createCollection(data: CreateCollectionType) {
     body: JSON.stringify(data)
   })
 }
+
+export function getCollectionsDetail() {
+  return fetch(apiEnum.COLLECTION_GET_ALL_DETAIL)
+}

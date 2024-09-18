@@ -43,7 +43,7 @@
 import { chat, llmChat } from '@/apis/llm'
 import { ragChat } from '@/apis/rag'
 import sessionStore from '@/store/sessionStore'
-import { ElMessage, ElNotification } from 'element-plus'
+import { ElMessage } from 'element-plus'
 import { v4 } from 'uuid'
 import { onMounted, ref } from 'vue'
 import Drawer from './drawer.vue'

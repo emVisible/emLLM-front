@@ -19,7 +19,9 @@ export async function loginWrap(values: UserLoginType) {
     userStore().setUserInfo(await getCurrentUser().then(res => res))
     router.push({ name: routeName })
     location.reload()
+    return true
   }
+  return false
 }
 export function logout() {
   ElMessageBox.confirm(

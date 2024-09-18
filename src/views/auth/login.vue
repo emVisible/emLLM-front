@@ -44,8 +44,15 @@ const { handleSubmit, values, errors, validate } = useForm({
 
 useFields(Object.keys(schema))
 const onSubmit = handleSubmit(async (values: any) => {
+  const loadingInstance = ElLoading.service({ fullscreen: true, background: '#bdc3c7a0' })
   loginWrap(values).then((r) => {
     console.log('r', r)
+    if (r) {
+      ElNotification({ title: '登录成功' })
+    } else {
+      ElNotification({ title: '登录失败', type: 'error' })
+    }
+    loadingInstance.close()
   })
 })
 </script>

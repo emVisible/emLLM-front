@@ -25,11 +25,9 @@
 </template>
 
 <script setup lang="ts">
+import { registry } from '@/apis/user'
 import Error from '@/components/y/error.vue'
 import v from '../../plugins/validate'
-import { loginWrap } from '../../utils/user'
-import { ElNotification } from 'element-plus'
-import { registry } from '@/apis/user'
 const { useForm, useFields, yup } = v
 const router = useRouter()
 const schema = yup.object({
@@ -46,6 +44,7 @@ const { handleSubmit, values, errors, validate } = useForm({
 
 useFields(Object.keys(schema))
 const onSubmit = handleSubmit(async (values: any) => {
+  const loadingInstance = ElLoading.service({ fullscreen: true, background: '#bdc3c7a0' })
   const { account, password } = values
   registry({
     name: account,
@@ -59,6 +58,7 @@ const onSubmit = handleSubmit(async (values: any) => {
       ElNotification({ title: '用户已注册', type: 'error' })
     }
   })
+  loadingInstance.close()
 })
 </script>
 
