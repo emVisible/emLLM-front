@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col gap-6">
-    <section>
-      <el-card>
+    <section class="flex flex-1">
+      <el-card class="flex-1">
         <template #header>
           <div class="card-header">
             <h2>集合 - Collection</h2>
@@ -9,13 +9,8 @@
         </template>
         <div class="header-container">
           <el-button @click="openDialog" type="primary">创建集合</el-button>
-          <span style="display: inline-flex">
-            <el-input v-model="searchQuery" placeholder="请输入集合名称搜索" clearable style="margin-right: 5px" />
-            <el-button @click="performSearch" type="primary">搜索</el-button>
-          </span>
         </div>
 
-        <!-- 集合展示表格 -->
         <el-table :data="collections" style="width: 100%">
           <el-table-column prop="id" label="ID" />
           <el-table-column prop="name" label="集合名称" />
@@ -24,13 +19,7 @@
         </el-table>
       </el-card>
 
-      <!-- 弹窗：创建集合 -->
-      <el-dialog
-        title="创建新集合"
-        v-model="isDialogVisible"
-        width="500"
-        @close="resetDialogForm"
-        style="z-index: 9999">
+      <el-dialog title="创建新集合" v-model="isDialogVisible" width="500" @close="resetDialogForm" style="z-index: 9999">
         <el-form :model="newCollection">
           <el-form-item label="集合名称" required>
             <el-input v-model="newCollection.name" />
@@ -52,22 +41,49 @@
         </template>
       </el-dialog>
     </section>
-    <section class="flex gap-6">
-      <el-card class="flex-1">
+    <section class="flex flex-1 gap-6">
+      <el-card class="flex-1 h-full">
         <template #header>
           <div class="card-header">
-            <h2>上传文档</h2>
+            <h3>上传文档</h3>
           </div>
         </template>
-        <el-cascader class="w-full" v-model="collectionName" :options="options" />
-        <UploadDocument :collectionName="collectionName" />
+        <div class="mb-3 flex">
+          <div class="break-keep flex items-center mr-4">选择集合</div>
+          <el-select v-model="uploadCollectionName" placeholder="Select" size="large">
+            <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
+        </div>
+        <UploadDocument :collectionName="uploadCollectionName" />
       </el-card>
-      <el-card class="flex-1">
+      <el-card class="flex-1" style="height:full; overflow-y:scroll;">
         <template #header>
           <div class="card-header">
-            <h2>Documents</h2>
+            <h2>文档</h2>
           </div>
         </template>
+        <div>
+          <div class="mb-3 flex">
+            <div class="break-keep flex items-center mr-4">选择集合</div>
+            <el-select v-model="docCollectionName" placeholder="Select" size="large">
+              <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+            </el-select>
+          </div>
+          <el-table :data="data" style="width: 100%" @cell-click="showEntireDoc" highlight-current-row>
+            <el-table-column prop="name" label="隶属集合" />
+            <el-table-column prop="id" label="ID" width="180" />
+            <el-table-column prop="metadata" label="来源" width="180" />
+            <el-table-column prop="document" label="文档内容" :overflow-tooltip="true" />
+          </el-table>
+        </div>
+        <el-dialog v-model="showDocDialog" title="Tips" class="w-full min-h-full ">
+          <div class="h-full p-4">{{ currentDocument }}</div>
+          <template #header>
+            <div class="text-2xl border-b-2 p-4">
+              {{ currentSource }}
+            </div>
+          </template>
+        </el-dialog>
       </el-card>
     </section>
   </div>
@@ -75,26 +91,28 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { getCollections, createCollection, getCollectionByName } from '@/apis/collection'
+import { getCollections, createCollection, getCollectionByName, getDocumentEntireContent } from '@/apis/collection'
 import UploadDocument from '@/components/rag/uploadDocument.vue'
 import { type OptionsType } from '#/ui'
-import { getCollectionsDetail } from '../../apis/collection';
-export interface CollectionType {
+import { getCollectionsDetail } from '../../apis/collection'
+interface CollectionType {
   id: string
   name: string
   database_name: string
   tenant_name: string
 }
 
-onMounted(async () => {
-  await fetchCollections()
-  const res = await getCollectionsDetail().then(res=>res.json())
-  console.log('res',res)
-})
-const collectionName = ref('')
+interface CollectionsDetail {
+  name: string
+  id: string
+  metadata: string
+  document: string
+}
+const docCollectionName = ref('')
+const uploadCollectionName = ref('')
+const data = ref<CollectionsDetail[]>([])
 const options = ref<OptionsType[]>([])
 const collections = ref<CollectionType[]>([])
-const searchQuery = ref('')
 const newCollection = ref({
   name: '',
   tenant_name: '',
@@ -102,11 +120,49 @@ const newCollection = ref({
   metadata: '',
 })
 const isDialogVisible = ref(false)
+const showDocDialog = ref(false)
+const currentDocument = ref('')
+const currentSource = ref('')
+onMounted(async () => {
+  await fetchCollections()
+})
+watch(docCollectionName, setCollectionDetail)
+
+async function setCollectionDetail() {
+  const res: CollectionsDetail[][] = await getCollectionsDetail().then((res) => res.json())
+  let resIndex = 0
+  try {
+    res.forEach((item, index) => {
+      if (item[0].name == docCollectionName.value) resIndex = index
+    })
+  } catch (e) {
+    ElNotification({ title: '获取失败', type: 'error' })
+  }
+  data.value = res[resIndex]
+}
+async function showEntireDoc(row: any, column: any) {
+  if (column.no == 3) {
+    showDocDialog.value = true
+    const document_id = row.id
+    const collection_name = docCollectionName.value
+    const document_source = row.metadata
+    const document = await getDocumentEntireContent({
+      document_id: document_id,
+      collection_name: collection_name
+    }).then(res => res.json())
+    currentDocument.value = document
+    currentSource.value = document_source
+  }
+  else {
+    currentDocument.value = ''
+    currentSource.value = ''
+  }
+}
 
 async function fetchCollections() {
   const response = await getCollections()
   const data: CollectionType[] = await response.json()
-  collections.value = data // 确保数据结构与Collection匹配
+  collections.value = data
   const names: OptionsType[] = []
   data.forEach((item) => {
     const { name } = item
@@ -118,36 +174,12 @@ async function fetchCollections() {
   })
   options.value = names
 }
-// 搜索集合 （input直接搜索）
-async function searchCollections() {
-  if (searchQuery.value) {
-    const response = await getCollectionByName(searchQuery.value)
-    const data = await response.json()
-    collections.value = [data] // 确保返回的是Collection类型
-  } else {
-    fetchCollections()
-  }
-}
 
-// 搜索集合（点击搜索按钮搜索）
-async function performSearch() {
-  if (searchQuery.value) {
-    const response = await getCollectionByName(searchQuery.value)
-    const data = await response.json()
-    // getCollectionByName返回单个对象，放入数组
-    collections.value = [data]
-  } else {
-    fetchCollections() // 如果没有搜索词，重新获取所有集合
-  }
-}
-
-// 打开弹窗的函数
 function openDialog() {
   console.log('Dialog Opened')
   isDialogVisible.value = true
 }
 
-// 重置弹窗表单的函数
 function resetDialogForm() {
   newCollection.value = {
     name: '',
@@ -157,7 +189,6 @@ function resetDialogForm() {
   }
 }
 
-// 创建新集合的函数
 async function createNewCollection() {
   if (!newCollection.value.name || !newCollection.value.tenant_name || !newCollection.value.database_name) {
     return alert('请填写完整的信息')
@@ -175,7 +206,7 @@ async function createNewCollection() {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .header-container {
   display: flex;
   justify-content: space-between;

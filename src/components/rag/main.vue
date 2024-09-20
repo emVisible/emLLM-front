@@ -11,28 +11,17 @@
     </el-main>
     <el-footer class="relative flex flex-col justify-center items-center mt-3">
       <section class="flex-1 flex w-[850px] justify-center items-center my-4">
-        <Drawer />
-        <div class="flex flex-1 h-[50px] bg-white items-center rounded-lg duration-300 hover:shadow-md focus:shadow-md">
-          <input
-            class="flex-[8] h-full pl-6 outline-none"
-            type="text"
-            v-model="userInput"
-            placeholder="想了解点什么~"
+        <div class="relative flex flex-1 h-[50px] bg-white items-center rounded-lg duration-300 hover:shadow-md focus:shadow-md">
+          <input class="flex-[8] h-full pl-6 outline-none" type="text" v-model="userInput" placeholder="想了解点什么~"
             @keyup.enter="handleSubmit" />
-          <span
-            v-if="chatMode"
-            class="cursor-default flex-1 flex justify-center items-center h-1/2 text-white bg-[#A29BFE] rounded-lg mr-2 px-3"
-            >{{ collectionName }}</span
-          >
+          <span v-if="chatMode"
+            class="cursor-default flex-1 flex justify-center items-center h-1/2 text-white bg-[#A29BFE] rounded-lg mr-2 px-3">{{
+            collectionName }}</span>
+          <Drawer class="absolute -left-12" v-show="chatMode" />
         </div>
-        <el-switch
-          v-model="chatMode"
-          inline-prompt
-          style="margin-left: 12px; --el-switch-on-color: #a29bfe; --el-switch-off-color: #74b9ff"
-          active-text="检索模式"
-          width="100%"
-          size="large"
-          inactive-text="基础模式" />
+        <el-switch v-model="chatMode" inline-prompt
+          style="margin-left: 12px; --el-switch-on-color: #a29bfe; --el-switch-off-color: #74b9ff" active-text="检索模式"
+          width="100%" size="large" inactive-text="基础模式" />
       </section>
       <section class="text-xs opacity-30 p-1">给出的建议可能会有错误, 请仔细鉴别</section>
     </el-footer>
@@ -70,7 +59,7 @@ onMounted(() => {
   const mainWindow = document.getElementById('main-window')
   mainWindow?.scroll({ top: mainWindow?.scrollHeight })
 })
-watch(llmStore(), syncCollectionName)
+watch(await llmStore(), syncCollectionName)
 // 初始化滑动与流式渲染监听滑动
 watch(await sessionStore(), async () => {
   const mainWindow = document.getElementById('main-window')

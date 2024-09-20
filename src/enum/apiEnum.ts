@@ -20,5 +20,6 @@ export enum apiEnum {
   COLLECTION_GET = "/api/vector_store/collection/get",
   COLLECTION_GET_ALL = "/api/vector_store/collections",
   COLLECTION_GET_ALL_NAME = "/api/vector_store/collection/names",
-  COLLECTION_GET_ALL_DETAIL = "/api/vector_store/collections/get_detail_all"
+  COLLECTION_GET_ALL_DETAIL = "/api/vector_store/collections/get_detail_all",
+  DOCUMENT_GET = "/api/vector_store/collections/get_document"
 }

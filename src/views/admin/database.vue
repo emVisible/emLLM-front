@@ -8,10 +8,6 @@
       </template>
       <div class="header-container">
         <el-button @click="isDialogVisible = true" type="primary">创建数据库</el-button>
-        <span style="display: inline-flex">
-          <el-input v-model="searchQuery" placeholder="请输入数据库名称搜索" clearable style="margin-right: 5px" />
-          <el-button @click="performSearch" type="primary">搜索</el-button>
-        </span>
       </div>
 
       <el-table :data="databases" style="width: 100%">
@@ -72,15 +68,6 @@ async function fetchDatabases() {
   databases.value = data
 }
 
-async function performSearch() {
-  if (searchQuery.value) {
-    const response = await getDatabaseByName(searchQuery.value)
-    const data = await response.json()
-    databases.value = [data]
-  } else {
-    fetchDatabases()
-  }
-}
 
 function resetDialogForm() {
   newDatabase.value = {

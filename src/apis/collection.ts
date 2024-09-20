@@ -6,6 +6,11 @@ interface CreateCollectionType {
   metadata?: Record<string, string>
 }
 
+interface GetDocumentEntireContentType {
+  document_id: string
+  collection_name: string
+}
+
 export function getCollectionByName(name: string) {
   return fetch(apiEnum.COLLECTION_GET, {
     method: 'POST',
@@ -36,4 +41,14 @@ export function createCollection(data: CreateCollectionType) {
 
 export function getCollectionsDetail() {
   return fetch(apiEnum.COLLECTION_GET_ALL_DETAIL)
+}
+
+export function getDocumentEntireContent(data: GetDocumentEntireContentType) {
+  return fetch(apiEnum.DOCUMENT_GET, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  })
 }

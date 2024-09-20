@@ -6,7 +6,7 @@
       <template class="py-4" v-if="history?.role === 'machine'" #content>
         <div v-html="md.render(history?.content)"></div>
       </template>
-      <template v-else-if="history?.role==='user'" #content>
+      <template v-else-if="history?.role === 'user'" #content>
         {{ JSON.parse(history?.content).content }}
       </template>
     </messageFrame>
@@ -17,20 +17,10 @@
 import sessionStore, { HistoryType } from "@/store/sessionStore";
 import { md } from "@/utils/md";
 import messageFrame from "./messageFrame.vue";
-const name = ref("test");
-const email = ref("test@qq.com");
-
-// getCurrentUser().then((r: any) => {
-//   console.log('🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹')
-//   console.log(r)
-//   console.log('🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹🔹')
-//   name.value = r.name;
-//   email.value = r.email;
-// });
 let data = ref<HistoryType[]>(
   sessionStore().getCurrentSession(sessionStore().currentIndex) as any
 );
-watch(sessionStore(), async () => {
+watch(await sessionStore(), async () => {
   data.value = (await sessionStore().getCurrentSession(
     sessionStore().currentIndex
   )) as any;

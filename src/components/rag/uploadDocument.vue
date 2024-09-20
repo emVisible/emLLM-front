@@ -20,7 +20,7 @@ import { UploadLogs } from '@icon-park/vue-next'
 const { collectionName } = defineProps(['collectionName'])
 
 const selectedFile = ref<File | null>(null)
-const supportFormat = '.doc .docx .pdf .xls .xlsx .txt .ppt .pptx .csv .epub .html .md .odt .enex .eml'
+const supportFormat = '.docx .pdf .xlsx .txt'
 
 const onUploadChange = (file: any, fileList: any) => {
   if (!file) return
