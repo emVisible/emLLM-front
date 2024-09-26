@@ -58,8 +58,14 @@
       </el-card>
       <el-card class="flex-1" style="height:full; overflow-y:scroll;">
         <template #header>
-          <div class="card-header">
-            <h2>文档</h2>
+          <div class="flex items-center">
+            <h2 class="mr-auto">文档</h2>
+            <el-popover placement="top-start" class="rounded-full" title="提示" trigger="hover"
+              content="'文档内容'列点击可浏览全部文档">
+              <template #reference>
+                <div class="flex justify-center items-center rounded-full h-3 w-3  bg-violet-400 p-2 text-xs text-white">?</div>
+              </template>
+            </el-popover>
           </div>
         </template>
         <div>
@@ -72,7 +78,7 @@
           <el-table :data="data" style="width: 100%" @cell-click="showEntireDoc" highlight-current-row>
             <el-table-column prop="name" label="隶属集合" />
             <el-table-column prop="id" label="ID" width="180" />
-            <el-table-column prop="metadata" label="来源" width="180" />
+            <el-table-column prop="source" label="来源" width="180" />
             <el-table-column prop="document" label="文档内容" :overflow-tooltip="true" />
           </el-table>
         </div>
@@ -102,15 +108,22 @@ interface CollectionType {
   tenant_name: string
 }
 
-interface CollectionsDetail {
-  name: string
+interface CollectionDetailData {
   id: string
-  metadata: string
+  name: string
+  source: string
   document: string
+}
+
+interface CollectionsDetail {
+  metadata: {
+    collection_name: string
+  }
+  data: CollectionDetailData[]
 }
 const docCollectionName = ref('')
 const uploadCollectionName = ref('')
-const data = ref<CollectionsDetail[]>([])
+const data = ref<CollectionDetailData[]>([])
 const options = ref<OptionsType[]>([])
 const collections = ref<CollectionType[]>([])
 const newCollection = ref({
@@ -129,23 +142,23 @@ onMounted(async () => {
 watch(docCollectionName, setCollectionDetail)
 
 async function setCollectionDetail() {
-  const res: CollectionsDetail[][] = await getCollectionsDetail().then((res) => res.json())
-  let resIndex = 0
+  const res: CollectionsDetail[] = await getCollectionsDetail().then((res) => res.json())
+  let cursor = 0
   try {
     res.forEach((item, index) => {
-      if (item[0].name == docCollectionName.value) resIndex = index
+      if (item.metadata.collection_name == docCollectionName.value) cursor = index
     })
   } catch (e) {
     ElNotification({ title: '获取失败', type: 'error' })
   }
-  data.value = res[resIndex]
+  data.value = res[cursor].data
 }
 async function showEntireDoc(row: any, column: any) {
   if (column.no == 3) {
     showDocDialog.value = true
     const document_id = row.id
     const collection_name = docCollectionName.value
-    const document_source = row.metadata
+    const document_source = row.source
     const document = await getDocumentEntireContent({
       document_id: document_id,
       collection_name: collection_name
